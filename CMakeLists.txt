@@ -3,3 +3,4 @@ project(Advent_Of_Code_2021)
 
 add_subdirectory(solutions/day01)
 add_subdirectory(solutions/day02)
+add_subdirectory(solutions/day03)
