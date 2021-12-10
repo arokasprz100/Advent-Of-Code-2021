@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <regex>
 
 namespace utils {
 
@@ -28,6 +29,18 @@ std::vector<unsigned> comma_separated_string_to_numbers(const std::string& to_co
                    std::back_inserter(numbers),
                    [](const auto& number_text) { return std::stoul(number_text); });
     return numbers;
+}
+
+std::string left_trim(const std::string& to_trim) {
+    return std::regex_replace(to_trim, std::regex("^\\s+"), std::string(""));
+}
+
+std::string right_trim(const std::string& to_trim) {
+    return std::regex_replace(to_trim, std::regex("\\s+$"), std::string(""));
+}
+
+std::string trim(const std::string& to_trim) {
+    return left_trim(right_trim(to_trim));
 }
 
 }
