@@ -1,7 +1,6 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include <map>
 #include <numeric>
 
 #include <Utils.h>
@@ -20,7 +19,7 @@ std::vector<unsigned> read_puzzle_input(const std::string& file_name) {
 }
 
 long long int calculate_lantern_fish_colony_size(const std::vector<unsigned>& initial_state, unsigned number_of_days) {
-    std::map<unsigned, long long int> fish_timer_value_counts{};
+    std::vector<long long int> fish_timer_value_counts(NEW_FISH_STARTING_TIMER_VALUE + 1, 0ll);
     for(auto& fish_timer : initial_state) {
         fish_timer_value_counts[fish_timer]++;
     }
@@ -32,8 +31,7 @@ long long int calculate_lantern_fish_colony_size(const std::vector<unsigned>& in
         fish_timer_value_counts[NEW_FISH_STARTING_TIMER_VALUE] = number_of_fish_to_create;
         fish_timer_value_counts[FISH_TIMER_RESET_VALUE] += number_of_fish_to_create;
     }
-    return std::accumulate(std::begin(fish_timer_value_counts), std::end(fish_timer_value_counts),0ll,
-                           [](const auto& previous, const auto& next_kv_pair) { return previous + next_kv_pair.second; });
+    return std::accumulate(std::begin(fish_timer_value_counts), std::end(fish_timer_value_counts),0ll);
 }
 
 int main() {
