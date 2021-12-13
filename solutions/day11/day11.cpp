@@ -32,20 +32,18 @@ bool has_octopus_flashed(const Octopus& octopus, const std::set<Octopus>& octopu
     return octopuses_that_flashed.find(octopus) != std::end(octopuses_that_flashed);
 }
 
-DumboOctopusesGrid increase_energy_level_of_each_octopus_by_one(DumboOctopusesGrid octopuses_grid) {
+void increase_energy_level_of_each_octopus_by_one(DumboOctopusesGrid& octopuses_grid) {
     for(unsigned i = 0; i < GRID_SIDE; ++i) {
         for(unsigned j = 0; j < GRID_SIDE; ++j) {
             ++octopuses_grid.at(i).at(j);
         }
     }
-    return octopuses_grid;
 }
 
-DumboOctopusesGrid set_energy_level_of_octopuses_that_flashed_to_zero(DumboOctopusesGrid octopuses_grid, const std::set<Octopus>& octopuses_that_flashed) {
+void set_energy_level_of_octopuses_that_flashed_to_zero(DumboOctopusesGrid& octopuses_grid, const std::set<Octopus>& octopuses_that_flashed) {
     for(const auto& octopus: octopuses_that_flashed) {
         octopuses_grid.at(octopus.first).at(octopus.second) = 0;
     }
-    return octopuses_grid;
 }
 
 void flash_if_energy_level_high_enough(const Octopus& to_check, DumboOctopusesGrid& octopuses_grid, std::set<Octopus>& octopuses_that_flashed) {
@@ -76,12 +74,13 @@ void iterate_over_colony_until_no_more_flashes(DumboOctopusesGrid& octopuses_gri
     }
 }
 
-std::pair<DumboOctopusesGrid, unsigned> model_single_step(const DumboOctopusesGrid& octopuses_grid) {
+std::pair<DumboOctopusesGrid, unsigned> model_single_step(DumboOctopusesGrid octopuses_grid) {
     std::set<Octopus> octopuses_that_flashed{};
-    DumboOctopusesGrid octopuses_after_level_increase = increase_energy_level_of_each_octopus_by_one(octopuses_grid);
-    iterate_over_colony_until_no_more_flashes(octopuses_after_level_increase, octopuses_that_flashed);
+    increase_energy_level_of_each_octopus_by_one(octopuses_grid);
+    iterate_over_colony_until_no_more_flashes(octopuses_grid, octopuses_that_flashed);
+    set_energy_level_of_octopuses_that_flashed_to_zero(octopuses_grid, octopuses_that_flashed);
     return {
-        set_energy_level_of_octopuses_that_flashed_to_zero(octopuses_after_level_increase, octopuses_that_flashed),
+        octopuses_grid,
         octopuses_that_flashed.size()
     };
 }
