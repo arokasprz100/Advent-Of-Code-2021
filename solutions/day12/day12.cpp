@@ -97,9 +97,9 @@ private:
         }
     }
 
-    unsigned visit_adjacent_caves(const std::string& vertex, const std::string& end) {
+    unsigned visit_adjacent_caves(const std::string& cave, const std::string& end) {
         unsigned number_of_paths{0};
-        const auto adjacent_caves_range = graph.equal_range(vertex);
+        const auto adjacent_caves_range = graph.equal_range(cave);
         for (auto i = adjacent_caves_range.first; i != adjacent_caves_range.second; ++i) {
             const std::string& adjacent_cave = i->second;
             if(adjacent_cave == end) {
