@@ -53,7 +53,8 @@ void flash_if_energy_level_high_enough(const Octopus& to_check, DumboOctopusesGr
     for(int i = -1; i <= 1; ++i) {
         for(int j = -1; j <= 1; ++j) {
             if(i == 0 && j == 0) continue;
-            if(to_check.first + i < 0 || to_check.first + i >= GRID_SIDE || to_check.second + j < 0 || to_check.second + j >= GRID_SIDE) continue;
+            if(static_cast<int>(to_check.first) + i < 0 || to_check.first + i >= GRID_SIDE ||
+               static_cast<int>(to_check.second) + j < 0 || to_check.second + j >= GRID_SIDE) continue;
             ++octopuses_grid.at(to_check.first + i).at(to_check.second + j);
         }
     }

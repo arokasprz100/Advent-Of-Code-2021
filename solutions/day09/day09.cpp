@@ -50,8 +50,8 @@ bool is_low_point(unsigned x, unsigned y, const Heightmap& heightmap_with_bounda
 std::vector<Coordinates> find_low_points_coordinates(const Heightmap& heightmap) {
     const auto heightmap_with_boundaries = add_boundaries(heightmap, 9);
     std::vector<Coordinates> low_points{};
-    for(int y = 1; y < heightmap_with_boundaries.size() - 1; ++y) {
-        for(int x = 1; x < heightmap_with_boundaries.at(0).size() - 1; ++x) {
+    for(unsigned y = 1; y < heightmap_with_boundaries.size() - 1; ++y) {
+        for(unsigned x = 1; x < heightmap_with_boundaries.at(0).size() - 1; ++x) {
             if(is_low_point(x, y, heightmap_with_boundaries)) {
                 low_points.emplace_back(x - 1, y - 1);
             }

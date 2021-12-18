@@ -23,7 +23,7 @@ long long int calculate_lantern_fish_colony_size(const std::vector<unsigned>& in
     for(auto& fish_timer : initial_state) {
         fish_timer_value_counts[fish_timer]++;
     }
-    for(int day = 0; day < number_of_days; ++day) {
+    for(unsigned day = 0; day < number_of_days; ++day) {
         long long int number_of_fish_to_create = fish_timer_value_counts[0];
         for(unsigned timer_value = 1; timer_value <= NEW_FISH_STARTING_TIMER_VALUE; ++timer_value) {
             fish_timer_value_counts[timer_value - 1] = fish_timer_value_counts[timer_value];

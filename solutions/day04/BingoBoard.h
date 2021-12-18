@@ -39,7 +39,7 @@ private:
 
     [[nodiscard]]
     bool is_any_column_marked() const {
-        for(int column_number = 0; column_number < BINGO_BOARD_SIDE; ++column_number) {
+        for(unsigned column_number = 0; column_number < BINGO_BOARD_SIDE; ++column_number) {
             if(is_column_marked(column_number)) {
                 return true;
             }
@@ -49,7 +49,7 @@ private:
 
     [[nodiscard]]
     bool is_any_row_marked() const {
-        for(int row_number = 0; row_number < BINGO_BOARD_SIDE; ++row_number) {
+        for(unsigned row_number = 0; row_number < BINGO_BOARD_SIDE; ++row_number) {
             if(is_row_marked(row_number)) {
                 return true;
             }

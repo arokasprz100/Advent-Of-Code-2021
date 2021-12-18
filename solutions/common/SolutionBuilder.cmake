@@ -27,4 +27,10 @@ function(build_solution_for_given_day)
         )
     endif()
 
+    if(MSVC)
+        target_compile_options(Day${PARSED_ARGS_DAY_NUMBER} PRIVATE /W4 /WX)
+    else()
+        target_compile_options(Day${PARSED_ARGS_DAY_NUMBER} PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    endif()
+
 endfunction()

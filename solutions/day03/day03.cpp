@@ -14,8 +14,7 @@ DiagnosticReport read_input_file(const std::string& file_path) {
         throw std::runtime_error{"Could not open input file: " + file_path};
     }
     DiagnosticReport puzzle_input{};
-    std::string current_binary_number{};
-    while(input_file >> current_binary_number) {
+    for(std::string current_binary_number{}; input_file >> current_binary_number; ) {
         puzzle_input.emplace_back(current_binary_number);
     }
     return puzzle_input;
@@ -43,7 +42,7 @@ DiagnosticReport remove_entries_with_non_matching_value(const DiagnosticReport& 
 }
 
 std::bitset<BITSET_SIZE> apply_bit_criteria_to_get_rating(DiagnosticReport diagnostic_report, const BitCriteria& bit_criteria) {
-    for(unsigned column_number = BITSET_SIZE - 1; column_number >= 0; --column_number) {
+    for(int column_number = BITSET_SIZE - 1; column_number >= 0; --column_number) {
         if(diagnostic_report.size() <= 1) {
             break;
         }
