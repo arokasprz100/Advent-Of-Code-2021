@@ -20,9 +20,9 @@ My solutions to the Advent of Code 2021 exercises created using C++.
 |  13 | Transparent Origami         | [link](https://adventofcode.com/2021/day/13)  | [link](solutions/day13)   |
 |  14 | Extended Polymerization     | [link](https://adventofcode.com/2021/day/14)  | [link](solutions/day14)   |
 |  15 | Chiton                      | [link](https://adventofcode.com/2021/day/15)  | [link](solutions/day15)   |
-|  16 |                             |                                               |                           |
-|  17 |                             |                                               |                           |
-|  18 |                             |                                               |                           |
+|  16 | Packet Decoder              | [link](https://adventofcode.com/2021/day/16)  | [link](solutions/day16)   |
+|  17 | Trick Shot                  | [link](https://adventofcode.com/2021/day/17)  |                           |
+|  18 | Snailfish                   | [link](https://adventofcode.com/2021/day/18)  |                           |
 |  19 |                             |                                               |                           |
 |  20 |                             |                                               |                           |
 |  21 |                             |                                               |                           |
