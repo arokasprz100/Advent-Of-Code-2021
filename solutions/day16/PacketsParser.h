@@ -34,10 +34,6 @@ private:
         return packet_as_binary.substr(PACKET_VERSION_LENGTH + PACKET_TYPE_ID_LENGTH);
     }
 
-    static inline bool contains_not_only_zeros(const std::string& binary_transmission) {
-        return binary_transmission.find('1') != std::string::npos;
-    }
-
     static PacketData extract_packet_data(const std::string& binary_transmission) {
         unsigned packet_version = get_packet_version(binary_transmission);
         unsigned packet_type_id = get_packet_type_id(binary_transmission);
@@ -87,22 +83,22 @@ private:
 
     static PacketData extract_operator_packet_with_length_type_id_one_data(unsigned packet_version, unsigned packet_type_id, const std::string& packet_content) {
         std::vector<std::unique_ptr<Packet>> sub_packets{};
-        unsigned number_of_sub_packets = converters::binary_to_decimal(packet_content.substr(PACKET_LENGTH_TYPE_ID_LENGTH, NUMBER_OF_SUB_PACKETS_LENGTH));
-        unsigned total_packet_length = PACKET_LENGTH_TYPE_ID_LENGTH + NUMBER_OF_SUB_PACKETS_LENGTH;
+        unsigned number_of_sub_packets = converters::binary_to_decimal(packet_content.substr(0, NUMBER_OF_SUB_PACKETS_LENGTH));
+        unsigned total_packet_length = NUMBER_OF_SUB_PACKETS_LENGTH;
         for(unsigned i = 0; i < number_of_sub_packets; ++i) {
             auto[packet, packet_length] = extract_packet_data(packet_content.substr(total_packet_length));
             sub_packets.emplace_back(std::move(packet));
             total_packet_length += packet_length;
         }
-        total_packet_length += PACKET_VERSION_LENGTH + PACKET_TYPE_ID_LENGTH;
+        total_packet_length += PACKET_VERSION_LENGTH + PACKET_TYPE_ID_LENGTH + PACKET_LENGTH_TYPE_ID_LENGTH;
         return { operator_packet_by_type_id(packet_type_id, packet_version, std::move(sub_packets)), total_packet_length };
     }
 
     static PacketData extract_operator_packet_with_length_type_id_zero_data(unsigned packet_version, unsigned packet_type_id, const std::string& packet_content) {
         std::vector<std::unique_ptr<Packet>> sub_packets{};
-        unsigned total_sub_packets_length = converters::binary_to_decimal(packet_content.substr(PACKET_LENGTH_TYPE_ID_LENGTH, CONTENT_SIZE_IN_BITS_LENGTH));
-        std::string sub_packets_as_binary = packet_content.substr(PACKET_LENGTH_TYPE_ID_LENGTH + CONTENT_SIZE_IN_BITS_LENGTH, total_sub_packets_length);
-        while(contains_not_only_zeros(sub_packets_as_binary)) {
+        unsigned total_sub_packets_length = converters::binary_to_decimal(packet_content.substr(0, CONTENT_SIZE_IN_BITS_LENGTH));
+        std::string sub_packets_as_binary = packet_content.substr(CONTENT_SIZE_IN_BITS_LENGTH, total_sub_packets_length);
+        while(!sub_packets_as_binary.empty()) {
             auto[packet, packet_length] = extract_packet_data(sub_packets_as_binary);
             sub_packets.emplace_back(std::move(packet));
             sub_packets_as_binary = sub_packets_as_binary.substr(packet_length);
@@ -113,8 +109,8 @@ private:
 
     static PacketData extract_operator_packet_data(unsigned packet_version, unsigned packet_type_id, const std::string& packet_content) {
         return packet_content.at(0) == '1'
-            ? extract_operator_packet_with_length_type_id_one_data(packet_version, packet_type_id, packet_content)
-            : extract_operator_packet_with_length_type_id_zero_data(packet_version, packet_type_id, packet_content);
+            ? extract_operator_packet_with_length_type_id_one_data(packet_version, packet_type_id, packet_content.substr(PACKET_LENGTH_TYPE_ID_LENGTH))
+            : extract_operator_packet_with_length_type_id_zero_data(packet_version, packet_type_id, packet_content.substr(PACKET_LENGTH_TYPE_ID_LENGTH));
     }
 
 };
