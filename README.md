@@ -22,9 +22,9 @@ My solutions to the Advent of Code 2021 exercises created using C++.
 |  15 | Chiton                      | [link](https://adventofcode.com/2021/day/15)  | [link](solutions/day15)   |
 |  16 | Packet Decoder              | [link](https://adventofcode.com/2021/day/16)  | [link](solutions/day16)   |
 |  17 | Trick Shot                  | [link](https://adventofcode.com/2021/day/17)  |                           |
-|  18 | Snailfish                   | [link](https://adventofcode.com/2021/day/18)  |                           |
-|  19 |                             |                                               |                           |
-|  20 |                             |                                               |                           |
+|  18 | Snailfish                   | [link](https://adventofcode.com/2021/day/18)  | [link](solutions/day18)   |
+|  19 | Beacon Scanner              | [link](https://adventofcode.com/2021/day/19)  |                           |
+|  20 | Trench Map                  | [link](https://adventofcode.com/2021/day/20)  |                           |
 |  21 |                             |                                               |                           |
 |  22 |                             |                                               |                           |
 |  23 |                             |                                               |                           |

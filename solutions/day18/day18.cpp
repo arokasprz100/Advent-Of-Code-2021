@@ -2,94 +2,80 @@
 #include <fstream>
 #include <vector>
 #include <cmath>
-#include <optional>
+#include <numeric>
 #include <Utils.h>
+
+struct RegularNumber {
+    unsigned value = 0;
+    unsigned depth = 0;
+};
+
+struct RegularNumberDepthComparator {
+    bool operator()(const RegularNumber& lhs, const RegularNumber& rhs) {
+        return lhs.depth < rhs.depth;
+    }
+};
 
 class SnailFishNumber {
 public:
 
-    SnailFishNumber(std::vector<unsigned> elements, std::vector<unsigned> nesting_levels) :
-        elements{std::move(elements)},
-        nesting_levels{std::move(nesting_levels)} {}
+    explicit SnailFishNumber(std::vector<RegularNumber> elements) :
+        elements{std::move(elements)} {}
 
     SnailFishNumber operator+(const SnailFishNumber& rhs) const {
-        std::vector<unsigned> elements_of_the_result{};
+        std::vector<RegularNumber> elements_of_the_result{};
         elements_of_the_result.reserve(elements.size() + rhs.elements.size());
         elements_of_the_result.insert(std::end(elements_of_the_result), std::begin(elements), std::end(elements));
         elements_of_the_result.insert(std::end(elements_of_the_result), std::begin(rhs.elements), std::end(rhs.elements));
-
-        std::vector<unsigned> nesting_levels_of_the_result{};
-        nesting_levels_of_the_result.reserve(nesting_levels.size() + rhs.nesting_levels.size());
-        nesting_levels_of_the_result.insert(std::end(nesting_levels_of_the_result), std::begin(nesting_levels), std::end(nesting_levels));
-        nesting_levels_of_the_result.insert(std::end(nesting_levels_of_the_result), std::begin(rhs.nesting_levels), std::end(rhs.nesting_levels));
-        std::for_each(std::begin(nesting_levels_of_the_result), std::end(nesting_levels_of_the_result), [](unsigned& level) { ++level; });
-
-        SnailFishNumber result{elements_of_the_result, nesting_levels_of_the_result};
+        std::for_each(std::begin(elements_of_the_result), std::end(elements_of_the_result), [](RegularNumber& element) { ++(element.depth); });
+        SnailFishNumber result{elements_of_the_result};
         result.reduce();
         return result;
     }
 
     [[nodiscard]]
     unsigned magnitude() const {
-        std::vector<unsigned> magnitudes = elements;
-        std::vector<unsigned> depths = nesting_levels;
-        unsigned deepest_level = *(std::max_element(std::begin(depths), std::end(depths)));
-        while(magnitudes.size() > 1) {
-            std::vector<unsigned> to_remove{};
-            for(unsigned i = 0; i < magnitudes.size(); ++i) {
-                if(depths.at(i) == deepest_level) {
-                    magnitudes.at(i) = 3 * magnitudes.at(i) + 2 * magnitudes.at(i + 1);
-                    --depths.at(i);
-                    to_remove.push_back(i + 1);
-                    ++i;
+        static RegularNumberDepthComparator depth_comparator{};
+        std::vector<RegularNumber> magnitudes_with_depths = elements;
+        unsigned deepest_level = std::max_element(std::begin(elements), std::end(elements), depth_comparator)->depth;
+        while(magnitudes_with_depths.size() > 1) {
+            unsigned number_of_magnitudes = magnitudes_with_depths.size();
+            unsigned number_of_removed = 0;
+            for(unsigned i = 0; i < number_of_magnitudes - number_of_removed; ++i) {
+                if(magnitudes_with_depths.at(i).depth == deepest_level) {
+                    RegularNumber new_magnitude_with_depth{
+                        3 * magnitudes_with_depths.at(i).value + 2 * magnitudes_with_depths.at(i + 1).value,
+                        magnitudes_with_depths.at(i).depth - 1
+                    };
+                    magnitudes_with_depths.at(i) = new_magnitude_with_depth;
+                    magnitudes_with_depths.erase(std::begin(magnitudes_with_depths) + i + 1);
+                    ++number_of_removed;
                 }
-            }
-            for(unsigned i = 0; i < to_remove.size(); ++i) {
-                magnitudes.erase(std::begin(magnitudes) + to_remove.at(i) - i);
-                depths.erase(std::begin(depths) + to_remove.at(i) - i);
             }
             --deepest_level;
         }
-        return magnitudes.empty() ? 0 : magnitudes.at(0);
+        return magnitudes_with_depths.empty() ? 0 : magnitudes_with_depths.at(0).value;
     }
 
 private:
-    std::vector<unsigned> elements{};
-    std::vector<unsigned> nesting_levels{};
-
-    [[nodiscard]]
-    std::optional<std::pair<unsigned, unsigned>> pair_to_explode_indexes() const {
-        for(unsigned i = 0; i < nesting_levels.size() - 1; ++i) {
-            if(nesting_levels.at(i) == 5 && nesting_levels.at(i + 1) == 5) {
-                return std::optional<std::pair<unsigned, unsigned>>{std::in_place, i, i + 1};
-            }
-        }
-        return std::nullopt;
-    }
-
-    [[nodiscard]]
-    std::optional<unsigned> regular_number_to_split_index() const {
-        for(unsigned i = 0; i < elements.size(); ++i) {
-            if(elements.at(i) >= 10) return i;
-        }
-        return std::nullopt;
-    }
+    std::vector<RegularNumber> elements{};
 
     [[nodiscard]]
     bool explode_if_possible() {
-        if(auto pair_to_explode = pair_to_explode_indexes(); pair_to_explode.has_value()) {
-            auto[first, second] = pair_to_explode.value();
-            auto[first_value, second_value] = std::pair<unsigned, unsigned>{elements.at(first), elements.at(second)};
-            elements.at(first) = 0;
-            --nesting_levels.at(first);
-            if(first != 0) {
-                elements.at(first - 1) += first_value;
+        for(unsigned index = 0; index < elements.size() - 1; ++index) {
+            if(elements.at(index).depth != 5) {
+                continue;
             }
-            if(second < elements.size() - 1) {
-                elements.at(second + 1) += second_value;
+            RegularNumber first_number = elements.at(index);
+            RegularNumber second_number = elements.at(index + 1);
+            elements.at(index) = {0, first_number.depth - 1};
+            if(index != 0) {
+                elements.at(index - 1).value += first_number.value;
             }
-            elements.erase(std::begin(elements) + second);
-            nesting_levels.erase(std::begin(nesting_levels) + second);
+            if(index + 1 < elements.size() - 1) {
+                elements.at(index + 2).value += second_number.value;
+            }
+            elements.erase(std::begin(elements) + index + 1);
             return true;
         }
         return false;
@@ -97,38 +83,34 @@ private:
 
     [[nodiscard]]
     bool split_if_possible() {
-        if(auto number_to_split = regular_number_to_split_index(); regular_number_to_split_index().has_value()) {
-            auto index = number_to_split.value();
-            auto rounded_down = static_cast<unsigned>(std::floor(elements.at(index) / 2.0));
-            auto rounded_up = static_cast<unsigned>(std::ceil(elements.at(index) / 2.0));
+        for(unsigned index = 0; index < elements.size(); ++index) {
+            if(elements.at(index).value < 10) {
+                continue;
+            }
+            RegularNumber to_split = elements.at(index);
+            RegularNumber rounded_down{static_cast<unsigned>(std::floor(to_split.value / 2.0)), to_split.depth + 1};
+            RegularNumber rounded_up{static_cast<unsigned>(std::ceil(to_split.value / 2.0)), to_split.depth + 1};
             elements.insert(std::begin(elements) + index, rounded_down);
             elements.at(index + 1) = rounded_up;
-            nesting_levels.insert(std::begin(nesting_levels) + index, nesting_levels.at(index) + 1);
-            ++nesting_levels.at(index + 1);
             return true;
         }
         return false;
     }
 
     void reduce() {
-        while(true) {
-            bool explode_result = explode_if_possible();
-            if(!explode_result) {
-                bool split_result = split_if_possible();
-                if(!split_result) {
-                    break;
-                }
+        for(bool reduced = true; reduced; ) {
+            reduced = explode_if_possible();
+            if(!reduced) {
+                reduced = split_if_possible();
             }
         }
     }
-
 };
 
 SnailFishNumber parse_snail_fish_number(const std::string& string_representation) {
     unsigned current_depth = 0;
     std::string current_number{};
-    std::vector<unsigned> elements{};
-    std::vector<unsigned> nesting_levels{};
+    std::vector<RegularNumber> elements{};
     for(char character: string_representation) {
         if(character == '[') {
             ++current_depth;
@@ -137,8 +119,7 @@ SnailFishNumber parse_snail_fish_number(const std::string& string_representation
             if(!current_number.empty()) {
                 unsigned number = std::stoul(current_number);
                 current_number.clear();
-                elements.push_back(number);
-                nesting_levels.push_back(current_depth);
+                elements.emplace_back(RegularNumber{number, current_depth});
             }
             --current_depth;
         }
@@ -146,15 +127,14 @@ SnailFishNumber parse_snail_fish_number(const std::string& string_representation
             if(!current_number.empty()) {
                 unsigned number = std::stoul(current_number);
                 current_number.clear();
-                elements.push_back(number);
-                nesting_levels.push_back(current_depth);
+                elements.emplace_back(RegularNumber{number, current_depth});
             }
         }
         else {
             current_number += character;
         }
     }
-    return SnailFishNumber{elements, nesting_levels};
+    return SnailFishNumber{elements};
 }
 
 std::vector<SnailFishNumber> read_puzzle_input(const std::string& file_name) {
@@ -171,21 +151,17 @@ std::vector<SnailFishNumber> read_puzzle_input(const std::string& file_name) {
 }
 
 unsigned solve_part_one(const std::vector<SnailFishNumber>& puzzle_input) {
-    SnailFishNumber addition_result = puzzle_input.at(0);
-    for(unsigned i = 1; i < puzzle_input.size(); ++i) {
-        addition_result = addition_result + puzzle_input.at(i);
-    }
+    auto addition_result = std::accumulate(std::begin(puzzle_input) + 1, std::end(puzzle_input), puzzle_input.front());
     return addition_result.magnitude();
 }
 
 unsigned solve_part_two(const std::vector<SnailFishNumber>& puzzle_input) {
     unsigned highest_magnitude = 0;
-    for(unsigned i = 0; i < puzzle_input.size(); ++i) {
-        for(unsigned j = 0; j < puzzle_input.size(); ++j) {
-            if(i == j) continue;
-            auto result = puzzle_input.at(i) + puzzle_input.at(j);
-            unsigned magnitude = result.magnitude();
-            highest_magnitude = magnitude > highest_magnitude ? magnitude : highest_magnitude;
+    for(unsigned i = 0; i < puzzle_input.size() - 1; ++i) {
+        for(unsigned j = i + 1; j < puzzle_input.size(); ++j) {
+            unsigned magnitude_in_order = (puzzle_input.at(i) + puzzle_input.at(j)).magnitude();
+            unsigned magnitude_reversed = (puzzle_input.at(j) + puzzle_input.at(i)).magnitude();
+            highest_magnitude = std::max(highest_magnitude, std::max(magnitude_in_order, magnitude_reversed));
         }
     }
     return highest_magnitude;
