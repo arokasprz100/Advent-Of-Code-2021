@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <map>
 #include <vector>
 #include <Utils.h>
 
@@ -100,8 +99,7 @@ Image read_infinite_image(std::ifstream& file) {
             continue;
         }
         image_width = 0;
-        std::stringstream input_line_string{input_line};
-        for(char input_character{}; input_line_string >> input_character; ) {
+        for(char input_character : input_line) {
             image_data_row_major.emplace_back(input_character == '#');
             ++image_width;
         }
