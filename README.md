@@ -25,8 +25,8 @@ My solutions to the Advent of Code 2021 exercises created using C++.
 |  18 | Snailfish                   | [link](https://adventofcode.com/2021/day/18)  | [link](solutions/day18)   |
 |  19 | Beacon Scanner              | [link](https://adventofcode.com/2021/day/19)  |                           |
 |  20 | Trench Map                  | [link](https://adventofcode.com/2021/day/20)  | [link](solutions/day20)   |
-|  21 | Dirac Dice                  | [link](https://adventofcode.com/2021/day/21)  |                           |
-|  22 |                             |                                               |                           |
+|  21 | Dirac Dice                  | [link](https://adventofcode.com/2021/day/21)  | [link](solutions/day21)   |
+|  22 | Reactor Reboot              | [link](https://adventofcode.com/2021/day/22)  | [link](solutions/day22)   |
 |  23 |                             |                                               |                           |
 |  24 |                             |                                               |                           |
 |  25 |                             |                                               |                           |
