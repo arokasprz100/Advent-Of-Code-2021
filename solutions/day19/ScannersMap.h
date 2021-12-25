@@ -26,7 +26,6 @@ namespace scanners_map {
             auto remove_it = std::remove(std::begin(unaligned_scanners), std::end(unaligned_scanners), scanner);
             unaligned_scanners.erase(remove_it, std::end(unaligned_scanners));
         };
-
         std::for_each(std::begin(to_remove), std::end(to_remove), remove_scanner);
         return unaligned_scanners;
     }
