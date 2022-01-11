@@ -29,4 +29,4 @@ My solutions to the Advent of Code 2021 exercises created using C++.
 |  22 | Reactor Reboot              | [link](https://adventofcode.com/2021/day/22) | [link](solutions/day22) |
 |  23 | Amphipod                    | [link](https://adventofcode.com/2021/day/23) |                         |
 |  24 | Arithmetic Logic Unit       | [link](https://adventofcode.com/2021/day/24) |                         |
-|  25 | Sea Cucumber                | [link](https://adventofcode.com/2021/day/25) |                         |
+|  25 | Sea Cucumber                | [link](https://adventofcode.com/2021/day/25) | [link](solutions/day25) |
